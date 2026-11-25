@@ -101,9 +101,17 @@ export function drawHUD(ctx, state) {
   const mm = Math.floor(state.timeLeft / 60);
   const ss = Math.floor(state.timeLeft % 60).toString().padStart(2, '0');
   text(ctx, `${mm}:${ss}`, tx + tw / 2, 22, 16, '#ffffff');
-  // Target + combo.
+  // Target + combo. The combo text pops bigger for a beat after each serve.
   text(ctx, `Target: ${state.dayCoins}/${day.target}`, 900, 22, 16, state.dayCoins >= day.target ? '#7be495' : COLORS.hudText, 'left');
-  if (state.combo > 1) text(ctx, `Kombo x${state.combo}`, 1150, 22, 18, COLORS.gold, 'left');
+  if (state.combo > 1) {
+    const pop = state.comboPop || 0;
+    const scale = 1 + 0.35 * pop;
+    ctx.save();
+    ctx.translate(1150, 22);
+    ctx.scale(scale, scale);
+    text(ctx, `Kombo x${state.combo}`, 0, 0, 18, COLORS.gold, 'left');
+    ctx.restore();
+  }
   // Order tickets.
   state.orders.forEach((o, i) => drawTicket(ctx, o, 24 + i * 208, 52));
   // Rush banner.

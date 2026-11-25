@@ -8,10 +8,26 @@ let muted = false;
 let musicTimer = null;
 let musicStep = 0;
 
-// C major pentatonic, bouncy and bright. Two bars of melody over a walking bass.
-const MELODY = [72, 76, 79, 81, 79, 76, 74, 72, 72, 76, 79, 84, 81, 79, 76, 74];
-const BASS = [48, 55, 48, 55, 45, 52, 43, 50, 48, 55, 48, 55, 45, 52, 43, 50];
+// C major pentatonic, bouncy and bright. Two 16-step phrases over a walking
+// bass: the second phrase climbs higher, and a soft lead voice answers the
+// melody on the off-beats, so the loop feels like a song instead of a jingle.
+const MELODY = [
+  72, 76, 79, 81, 79, 76, 74, 72, 72, 76, 79, 84, 81, 79, 76, 74,
+  72, 76, 79, 81, 84, 81, 79, 76, 76, 81, 84, 88, 86, 84, 81, 79,
+];
+const BASS = [
+  48, 55, 48, 55, 45, 52, 45, 52, 43, 50, 43, 50, 48, 55, 48, 55,
+  45, 52, 45, 52, 41, 48, 41, 48, 43, 50, 43, 50, 48, 55, 43, 50,
+];
+// Soft lead harmony (0 = rest): answers the melody a step or two above.
+const LEAD = [
+  0, 0, 84, 0, 0, 0, 86, 0, 0, 0, 84, 0, 0, 0, 81, 0,
+  0, 0, 84, 0, 0, 0, 84, 0, 0, 0, 86, 0, 0, 0, 84, 0,
+];
 const STEP_SECONDS = 0.21;
+
+// The note tables above are MIDI numbers; the synth needs Hertz.
+function midi(m) { return 440 * Math.pow(2, (m - 69) / 12); }
 
 function ensure() {
   if (ctx) return true;
@@ -102,11 +118,14 @@ export const audio = {
     musicStep = 0;
     musicTimer = window.setInterval(() => {
       if (muted || !ctx) return;
-      const i = musicStep % 16;
+      const i = musicStep % 32;
       const m = MELODY[i];
       const b = BASS[i];
-      tone(m, STEP_SECONDS * 0.9, 'triangle', 0.16);
-      if (i % 2 === 0) tone(b, STEP_SECONDS * 1.8, 'sine', 0.22);
+      const l = LEAD[i];
+      tone(midi(m), STEP_SECONDS * 0.9, 'triangle', 0.16);
+      if (l) tone(midi(l), STEP_SECONDS * 1.4, 'sine', 0.09);
+      if (i % 2 === 0) tone(midi(b), STEP_SECONDS * 1.8, 'sine', 0.22);
+      if (i % 8 === 6) tone(midi(b + 7), STEP_SECONDS * 0.9, 'sine', 0.13);
       if (i % 4 === 2) noise(0.05, 0.1, 6000);
       musicStep += 1;
     }, STEP_SECONDS * 1000);

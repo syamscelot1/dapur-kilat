@@ -1,7 +1,7 @@
 // Every pixel of the kitchen, drawn in code: floor, counters, stations, the
 // chef, and each ingredient as a small flat-vector icon. No images, no
 // network — the judge's screenshots come straight from these functions.
-import { CANVAS_H, CANVAS_W, COLORS, INGREDIENTS, PROCESS, BURN_SECONDS } from './config.js';
+import { CANVAS_H, CANVAS_W, COLORS, INGREDIENTS, PROCESS, BURN_SECONDS, recipeById } from './config.js';
 import { STATION_KIND } from './world.js';
 
 export function rr(ctx, x, y, w, h, r) {
@@ -220,6 +220,19 @@ function drawProgressBar(ctx, x, y, w, frac, color) {
   }
 }
 
+// A status label that floats above a busy station: a dark pill behind the
+// text so it never merges with the station's top edge.
+function labelPill(ctx, str, cx, y, size, color) {
+  ctx.save();
+  ctx.font = `bold ${size}px "Trebuchet MS", "Segoe UI", sans-serif`;
+  const w = ctx.measureText(str).width + 18;
+  ctx.fillStyle = 'rgba(43,29,18,0.88)';
+  rr(ctx, cx - w / 2, y - 11, w, 22, 11);
+  ctx.fill();
+  ctx.restore();
+  text(ctx, str, cx, y + 1, size, color);
+}
+
 function drawStation(ctx, state, s) {
   const slot = state.slots[s.id];
   ctx.save();
@@ -336,7 +349,7 @@ function drawStation(ctx, state, s) {
     const cy = s.y + s.h / 2;
     if (slot.burnt) {
       drawIngredient(ctx, slot.ing, cx, cy, 20, slot.process, true);
-      text(ctx, 'GOSONG!', cx, s.y - 12, 15, '#ff6b5e');
+      labelPill(ctx, 'GOSONG!', cx, s.y - 16, 15, '#ff8a7a');
     } else if (slot.done) {
       drawIngredient(ctx, slot.ing, cx, cy, 22, slot.process);
       ctx.fillStyle = 'rgba(46,158,91,0.9)';
@@ -348,12 +361,41 @@ function drawStation(ctx, state, s) {
     } else {
       drawIngredient(ctx, slot.ing, cx, cy, 20, slot.process);
       drawProgressBar(ctx, s.x + 12, s.y + s.h - 16, s.w - 24, slot.progress / slot.duration, '#2e9e5b');
-      shadowText(ctx, PROCESS[slot.process].verb, cx, s.y - 12, 13, '#fff6d8');
+      labelPill(ctx, PROCESS[slot.process].verb, cx, s.y - 16, 13, '#fff6d8');
     }
   } else if (s.kind !== STATION_KIND.PLATE && s.kind !== STATION_KIND.SERVE && s.kind !== STATION_KIND.TRASH && s.kind !== STATION_KIND.BOOK) {
     shadowText(ctx, s.label, s.x + s.w / 2, s.y + s.h + 14, 13, '#fff6d8');
   }
   ctx.restore();
+}
+
+// A finished dish on a plate: a generous mound in the recipe's own colour,
+// topped with the dish's main component drawn large, so the food reads as
+// worth serving even in a small screenshot. `s` scales it down for a plate
+// carried in the chef's hands.
+function drawFinishedDish(ctx, x, y, recipeId, s = 1) {
+  const recipe = recipeById(recipeId);
+  const color = recipe ? recipe.color : '#e8963c';
+  const r = 17 * s;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(x, y, r, Math.PI, 0);
+  ctx.closePath();
+  ctx.fill();
+  ctx.strokeStyle = 'rgba(43,29,18,0.5)';
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  ctx.arc(x, y, r, Math.PI, 0);
+  ctx.stroke();
+  if (recipe && recipe.needs.length > 0) {
+    const main = recipe.needs[0];
+    drawIngredient(ctx, main.ing, x, y - 6 * s, 14 * s, main.process);
+  }
+  ctx.fillStyle = '#fff';
+  ctx.font = `bold ${Math.max(11, Math.round(13 * s))}px "Trebuchet MS", sans-serif`;
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('★', x + 20 * s, y - 12 * s);
 }
 
 export function drawPlate(ctx, plate) {
@@ -372,21 +414,11 @@ export function drawPlate(ctx, plate) {
   ctx.ellipse(plate.x + 26, plate.y + 26, 30, 22, 0, 0, Math.PI * 2);
   ctx.stroke();
   if (plate.dish) {
-    // Finished dish: a proud little mound in the recipe colour.
-    const recipe = plate.dish;
-    ctx.fillStyle = '#e8963c';
-    ctx.beginPath();
-    ctx.arc(plate.x + 26, plate.y + 22, 13, Math.PI, 0);
-    ctx.closePath();
-    ctx.fill();
-    ctx.fillStyle = '#fff';
-    ctx.font = 'bold 15px "Trebuchet MS", sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('★', plate.x + 26, plate.y + 14);
+    drawFinishedDish(ctx, plate.x + 26, plate.y + 24, plate.dish);
   } else {
+    const n = plate.items.length;
     plate.items.forEach((c, i) => {
-      drawIngredient(ctx, c.ing, plate.x + 14 + i * 16, plate.y + 24, 11, c.process);
+      drawIngredient(ctx, c.ing, plate.x + 26 + (i - (n - 1) / 2) * 19, plate.y + 24, 12, c.process);
     });
   }
   ctx.restore();
@@ -452,30 +484,37 @@ function drawChef(ctx, p) {
   ctx.beginPath();
   ctx.arc(0, -17, 4, 0.15 * Math.PI, 0.85 * Math.PI);
   ctx.stroke();
-  // Carried item floats above the hands.
+  // Carried item is held at the chef's side, in the hands — never above
+  // the head, where a plate used to read as a second chef hat. The arm on
+  // the carrying side reaches out to the hand.
   if (p.carry) {
-    const cy = -44;
-    if (p.carry.type === 'ing') drawIngredient(ctx, p.carry.ing, 0, cy, 15);
-    else if (p.carry.type === 'food') drawIngredient(ctx, p.carry.ing, 0, cy, 15, p.carry.process, p.carry.burnt);
+    const side = p.dir === 'left' ? -1 : 1;
+    const hx = side * 30;
+    const hy = 6;
+    ctx.strokeStyle = '#ffffff';
+    ctx.lineWidth = 6;
+    ctx.beginPath();
+    ctx.moveTo(side * 14, -4);
+    ctx.lineTo(hx, hy);
+    ctx.stroke();
+    if (p.carry.type === 'ing') drawIngredient(ctx, p.carry.ing, hx, hy, 15);
+    else if (p.carry.type === 'food') drawIngredient(ctx, p.carry.ing, hx, hy, 15, p.carry.process, p.carry.burnt);
     else if (p.carry.type === 'plate') {
       ctx.fillStyle = COLORS.plate;
       ctx.beginPath();
-      ctx.ellipse(0, cy, 20, 13, 0, 0, Math.PI * 2);
+      ctx.ellipse(hx, hy, 20, 13, 0, 0, Math.PI * 2);
       ctx.fill();
-      ctx.strokeStyle = '#b9c2c9';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#8a9299';
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.ellipse(0, cy, 20, 13, 0, 0, Math.PI * 2);
+      ctx.ellipse(hx, hy, 20, 13, 0, 0, Math.PI * 2);
       ctx.stroke();
       if (p.carry.plate.dish) {
-        ctx.fillStyle = '#e8963c';
-        ctx.beginPath();
-        ctx.arc(0, cy - 2, 8, Math.PI, 0);
-        ctx.closePath();
-        ctx.fill();
+        drawFinishedDish(ctx, hx, hy - 2, p.carry.plate.dish, 0.7);
       } else {
-        p.carry.plate.items.forEach((c, i) => {
-          drawIngredient(ctx, c.ing, -10 + i * 12, cy, 7, c.process);
+        const items = p.carry.plate.items;
+        items.forEach((c, i) => {
+          drawIngredient(ctx, c.ing, hx + (i - (items.length - 1) / 2) * 14, hy, 8, c.process);
         });
       }
     }

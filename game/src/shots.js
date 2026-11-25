@@ -45,7 +45,9 @@ export function stageShot(name, state) {
   }
   if (name === 'serve') {
     s = baseState(2, 168, 168, 88, 4);
-    s.player.x = 1060; s.player.y = 178;
+    // Chef below the serving window, a step left so the plate he carries
+    // clears the recipe book's title.
+    s.player.x = 1010; s.player.y = 185;
     addOrder(s, 'ayam-geprek', 'Ayam Geprek', '#d92b1f', 30, 42);
     addOrder(s, 'gado-gado', 'Gado-Gado', '#4da34d', 18, 42);
     s.plates[0].items = [

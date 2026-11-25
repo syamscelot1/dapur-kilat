@@ -68,6 +68,7 @@ export function createState() {
     dayCoins: 0,
     timeLeft: 180,
     combo: 0,
+    comboPop: 0, // 1 just after a serve, decays to 0; the HUD pops the combo text
     bestCombo: 0,
     served: 0,
     wasted: 0,

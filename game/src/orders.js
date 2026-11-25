@@ -59,6 +59,7 @@ export function servePlate(state, plate) {
   const tip = tipFor(order, recipe);
   const earned = Math.round((recipe.price + tip) * comboMultiplier(state));
   state.combo += 1;
+  state.comboPop = 1;
   state.bestCombo = Math.max(state.bestCombo, state.combo);
   state.coins += earned;
   state.dayCoins += earned;

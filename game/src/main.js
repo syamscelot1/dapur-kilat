@@ -117,6 +117,7 @@ function step(dt) {
   stepPlayer(state, dt, input);
   stepStations(state, dt);
   stepOrders(state, dt, rng);
+  if (state.comboPop > 0) state.comboPop = Math.max(0, state.comboPop - dt * 2);
   drainEvents();
   if (state.timeLeft <= 0) {
     state.timeLeft = 0;
