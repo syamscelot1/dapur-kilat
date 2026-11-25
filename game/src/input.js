@@ -1,4 +1,5 @@
-// Keyboard + mouse input for Dapur Kilat. Tracks held keys, edge-triggered
+// Keyboard + mouse input for Dapur Ngebul — WASD/panah, E/Spasi/klik.
+// Tracks held keys, edge-triggered presses and the mouse target.
 // actions (interact / confirm / pause / mute) and canvas clicks, so the game
 // loop can ask "was E pressed this frame?" instead of polling raw events.
 export const ACTION_INTERACT = 'interact';

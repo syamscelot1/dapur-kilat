@@ -1,4 +1,4 @@
-// Dapur Kilat — hand-in program (Node 22, standard library only). The game
+// Dapur Ngebul — hand-in program (Node 22, standard library only). The game
 // is this directory's game/ folder: plain static files a desktop browser
 // loads offline (game/index.html and its ES modules, no library, no network
 // request). This program copies game/ and screenshots/ from beside this file

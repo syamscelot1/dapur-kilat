@@ -82,7 +82,8 @@ export function stageShot(name, state) {
     return s;
   }
   // cover (default): the whole kitchen at its busiest readable moment.
-  s = baseState(1, 85, 85, 92, 3);
+  // Staged on day 2 so the recipe book shows 6 recipes, not 4.
+  s = baseState(2, 120, 120, 100, 3);
   s.player.x = 600; s.player.y = 520;
   addOrder(s, 'nasi-goreng', 'Nasi Goreng Kilat', '#e8963c', 34, 48);
   addOrder(s, 'mie-ayam', 'Mie Ayam', '#f2c14e', 26, 48);
@@ -91,6 +92,7 @@ export function stageShot(name, state) {
   setSlot(s, 'board-1', 'cabai', 'potong', 2.0, 2.0, true);
   setSlot(s, 'pot-1', 'mie', 'rebus', 3.1, 4.0, false);
   s.smoke.push({ x: 585, y: 210, life: 1.0, max: 1.4 });
+  s.smoke.push({ x: 585, y: 340, life: 0.9, max: 1.4 });
   s.plates[0].items = [{ ing: 'nasi', process: 'goreng' }, { ing: 'telur', process: 'goreng' }];
   s.plates[0].carried = true;
   s.player.carry = { type: 'plate', plate: s.plates[0] };

@@ -1,4 +1,5 @@
-// Dapur Kilat — all tuning in one place: canvas, ingredients, recipes, days.
+// Dapur Ngebul — all tuning in one place: canvas, ingredients, recipes, days.
+// Wajan mengepul, pesanan menumpuk: every number below feeds that rush.
 // Nothing here is copied from any other game: every dish is Indonesian,
 // every name, colour and price was picked for this kitchen.
 export const CANVAS_W = 1280;

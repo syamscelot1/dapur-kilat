@@ -83,7 +83,7 @@ export function drawHUD(ctx, state) {
   // Top strip.
   ctx.fillStyle = COLORS.hud;
   ctx.fillRect(0, 0, CANVAS_W, 44);
-  text(ctx, 'DAPUR KILAT', 20, 22, 20, COLORS.gold, 'left');
+  text(ctx, 'DAPUR NGEBUL', 20, 22, 20, COLORS.gold, 'left');
   text(ctx, `Hari ${state.day}/3`, 210, 22, 18, COLORS.hudText, 'left');
   text(ctx, `Koin: ${state.coins}`, 330, 22, 18, COLORS.hudText, 'left');
   // Shift timer bar.
@@ -128,8 +128,8 @@ export function drawHUD(ctx, state) {
 
 function bigTitle(ctx) {
   text(ctx, 'DAPUR', 640, 170, 84, '#ffe9b0');
-  text(ctx, 'KILAT', 640, 250, 84, '#f6b73c');
-  text(ctx, 'Masak cepat, sajikan tepat waktu — sebelum pelanggan kehabisan sabar!', 640, 320, 20, '#fff6d8');
+  text(ctx, 'NGEBUL', 640, 250, 84, '#f6b73c');
+  text(ctx, 'Dapur berasap, wajan mengepul — sajikan sebelum pelanggan kehabisan sabar!', 640, 320, 20, '#fff6d8');
 }
 
 export function drawTitle(ctx, buttons) {

@@ -1,10 +1,10 @@
-# Dapur Kilat
+# Dapur Ngebul
 
 [![make.fun · best-cooking-game-20261125-0137](https://make.fun/badge/best-cooking-game-20261125-0137.svg)](https://make.fun/bounty/best-cooking-game-20261125-0137?utm_source=github&utm_medium=readme&utm_campaign=best-cooking-game-20261125-0137)
 [![rank](https://make.fun/badge/best-cooking-game-20261125-0137/syamscelot1/Dapur-Kilat/rank.svg)](https://make.fun/bounty/best-cooking-game-20261125-0137/leaderboard?utm_source=github&utm_medium=readme&utm_campaign=best-cooking-game-20261125-0137)
 [![reward](https://make.fun/badge/best-cooking-game-20261125-0137/syamscelot1/Dapur-Kilat/reward.svg)](https://make.fun/bounty/best-cooking-game-20261125-0137?utm_source=github&utm_medium=readme&utm_campaign=best-cooking-game-20261125-0137)
 
-A fast, complete Indonesian cooking game, built from scratch for make.fun's
+Dapur Ngebul is a fast, complete Indonesian cooking game, built from scratch for make.fun's
 "Make the best cooking game" bounty — $250 in USDC. Everything is original:
 the kitchen, the chef, the eight Indonesian recipes and every sound are
 invented for this entry. No images, no audio files, no network: all art is

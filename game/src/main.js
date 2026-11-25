@@ -1,4 +1,5 @@
-// Dapur Kilat — boot and the one loop. Screens: title, how-to, playing,
+// Dapur Ngebul — boot and the one loop: title, how-to, playing, day flow,
+// summaries and win/lose. Fixed-step update, render every frame.
 // paused, day summary, win, lose. Fixed 1/60 s steps; the world, orders and
 // player advance only while playing. ?shot=cover|chop|serve|rush stages a
 // deterministic scene and sets window.__shotReady for screenshots.
